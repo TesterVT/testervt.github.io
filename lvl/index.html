@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор уровней Шарарам</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.3);
+    }
+    label {
+      font-size: 14px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 12px;
+      font-size: 16px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #38bdf8;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 12px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .hint {
+      font-size: 12px;
+      opacity: .7;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Калькулятор уровней Шарарам</h1>
+
+  <div class="card">
+    <label>Текущий уровень</label>
+    <input id="fromLevel" type="number" min="1" value="1" />
+
+    <label>Нужный уровень</label>
+    <input id="toLevel" type="number" min="2" value="5" />
+
+    <button onclick="calculate()">Посчитать</button>
+
+    <div class="result" id="result"></div>
+    <div class="hint">⚠️ Формулы можно легко поменять в коде под реальные данные Шарарама</div>
+  </div>
+
+  <script>
+    // Таблица опыта Шарарама
+    // index = текущий уровень, value = опыт для перехода на следующий
+    const expTable = [
+      0,
+      3,7,10,18,52,60,135,105,215,
+      229,291,363,445,537,639,751,873,1005,1147,
+      1299,1461,1633,1815,2007,2209,2412,2616,2821,3027,
+      3234,3442,3651,3861,4072,4284,4497,4711,4926,5142,
+      5359,5577,5796,6016,6237,6459,6682,6906,7131,7357,
+      7683,8109,8635,9261,9987,10813,11739,12765,13891,15117,
+      16443,17869,19395,21021,22747,24573,26499,28525,30651,32877,
+      35203,37629,40155,42781,45507,48333,51259,54285,57411,60637,
+      63963,67389,70915,74541,78267,82093,86019,90045,94171,98397,
+      102723,107149,111675,116301,121027,125853,130779,135805,140931,146157,
+      151483,156909,162435,168061,173787,179613,185539,191565,197691,203917,
+      210243,216669,223195,229821,236547,243373,250299,257325,264451,271677,
+      279003,286429,293955,301581,309307,317133,325059,333085,341211,349437,
+      357763,366189,374715,383341,392067,400893,409819,418845,427971,437197,
+      446523,455949,465475,475101,484827,494653,504579,514605,524731,534957,
+      545283,555709,566235,576861,587587,598413,609339,620365,631491,642717,
+      654043,665469,676995,688621,700347,712173,724099,736125,748251,760477,
+      772803,785229,797755,810381,823107,835933,848859,861885,875011,888237,
+      901563,914989,928515,942141,955867,969693,983619,997645,1011771,1025997,
+      1040323,1054749,1069275,1083901,1098627,1113453,1128379,1143405,1158531,1173757
+    ];
+
+    function calculate() {
+      const from = parseInt(document.getElementById('fromLevel').value)
+      const to = parseInt(document.getElementById('toLevel').value)
+      const resultEl = document.getElementById('result')
+
+      if (to <= from) {
+        resultEl.innerHTML = '❌ Нужный уровень должен быть больше текущего'
+        return
+      }
+
+      let totalExp = 0
+      for (let lvl = from; lvl < to; lvl++) {
+        totalExp += expTable[lvl] || 0
+      }
+
+      const mixins = totalExp * 2
+      const rumbiks = Math.floor(totalExp / 25)
+      const leftoverMixins = (totalExp % 25) * 2
+
+      resultEl.innerHTML = `
+        🔼 С ${from} → ${to} уровня<br><br>
+        ⭐ Опыт: <b>${totalExp}</b><br>
+        🍬 Смешинки: <b>${mixins}</b><br>
+        💎 Румбики: <b>${rumbiks}</b><br>
+        ➕ Остаток: <b>${leftoverMixins}</b> смешинок
+      `
+    }
+
+    const tg = window.Telegram.WebApp
+    tg.ready()
+    tg.expand()
+  </script>
+</body>
+</html>
